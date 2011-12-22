@@ -3,9 +3,11 @@
 
 
 import os
-from Tkinter import *
+from Tkinter import Tk, Menu, END, Toplevel, Label, Frame, Entry, Button, WORD, Text
 import tkFileDialog
 from xlrd import open_workbook
+import codecs
+
 
 '''
 Created on 22.12.2011
@@ -17,6 +19,9 @@ Creating IPTV playlist from EXCEL Servise PLAN.
 
 sheet0 = 0
 open_file = ''
+tmp = 'tmp/tmp_file.txt'
+
+
 def parse (row_num):
     '''
     Readig row-num row in EXCEL file
@@ -50,45 +55,64 @@ def transformation(event):
         tex.delete(1.0,END) #erasing previous text in tex area
         tex.insert(END, '#EXTM3U\n')
   
-        i = 1
-        num = 6
-        while i <= 35:
-            _list = parse(num) #reading num's row in sheet0
-            if _list[1] < 10:
-                list2 = '#EXTINF:0,00'
-            else:
-                list2 = '#EXTINF:0,0'
-            list2 += str(int(_list[1])) + ' ' + '[' + 'SOCIAL' + ']' + ' ' + _list[0] + '\n' + 'udp://@' 
-            list2 += str(_list[2]) + ':5004'
-            iter_write_section(list2)
-            i += 1
-            num += 1
-        i = 1
-        num = 43
-        while i <= 24:
-            _list = parse(num)
-            if _list[1] < 10:
-                list2 = '#EXTINF:0,00'
-            else:
-                list2 = '#EXTINF:0,0'
-            list2 += str(int(_list[1])) + ' ' + '[' + 'BASE' + ']' + ' ' + _list[0] + '\n' + 'udp://@'
-            list2 += str(_list[2]) + ':5004'
-            iter_write_section(list2)
-            i += 1
-            num += 1
-#        i = 1
-#        num = 80
-#        while i <= 30:
-#            _list = parse(num)
-#            if _list[1] < 10:
-#                list2 = '#EXTINF:0,00'
-#            else:
-#                list2 = '#EXTINF:0,0'
-#            list2 += str(int(_list[1])) + ' ' + '[' + 'FULL' + ']' + ' ' + _list[0] + '\n' + 'udp://@'
-#            list2 += str(_list[2]) + ':5004'
-#            iter_write_section(list2)
-#            i += 1
-#            num += 1
+        first_row = 7
+   
+        if ent1.get():
+            i = 1
+            num = first_row #first row of group
+            while i <= int(ent1.get()): #count of channels in group
+                _list = parse(num-1) #reading num's row in sheet0
+                if _list[1] < 10 and _list[1] > 0:
+                    list2 = '#EXTINF:0,00'
+                elif _list[1] > 99:
+                    list2 = '#EXTINF:0,'
+                else:
+                    list2 = '#EXTINF:0,0'
+                a = _list[0]
+                string = a.encode('utf-8')
+                list2 += str(int(_list[1])) + ' ' + '[' + 'SOCIAL' + ']' + ' ' + string + '\n' + 'udp://@' 
+                list2 += str(_list[2]) + ':5004'
+                iter_write_section(list2)
+                i += 1
+                num += 1
+
+        if ent2.get():
+            i = 1
+            num = first_row + int(ent1.get()) + 2
+            while i <= int(ent2.get()):
+                _list = parse(num-1)
+                if _list[1] < 10 and _list[1] > 0:
+                    list2 = '#EXTINF:0,00'
+                elif _list[1] > 99:
+                    list2 = '#EXTINF:0,'
+                else:
+                    list2 = '#EXTINF:0,0'
+                list2 += str(int(_list[1])) + ' ' + '[' + 'BASE' + ']' + ' ' + _list[0] + '\n' + 'udp://@'
+                list2 += str(_list[2]) + ':5004'
+                iter_write_section(list2)
+                i += 1
+                num += 1
+        if ent3.get():
+            i = 1
+            num = first_row + int(ent1.get()) + int(ent2.get()) + 4
+            while i <= int(ent3.get()):
+                _list = parse(num-1)
+                if _list[1] < 10 and _list[1] > 0:
+                    list2 = '#EXTINF:0,00'
+                elif _list[1] > 99:
+                    list2 = '#EXTINF:0,'
+                else:
+                    list2 = '#EXTINF:0,0'
+                list2 += str(int(_list[1])) + ' ' + '[' + 'FULL' + ']' + ' ' + _list[0] + '\n' + 'udp://@'
+                list2 += str(_list[2]) + ':5004'
+                iter_write_section(list2)
+                i += 1
+                num += 1
+    
+        letter = tex.get(1.0,END)
+        f = codecs.open('tmp/tmp_file.txt', "w", "utf-8")
+        f.write(letter)
+        f.close()
     
     else:
         tex.delete(1.0,END)
@@ -119,13 +143,7 @@ def mail_result(event):
     from modules.send_mail import send_mail
     from modules.conf_fetcher import fetcher
 
-    tmp = 'tmp/tmp_file.txt'
     a = fetcher() #take a dict with conf setting
-    
-    letter = tex.get(1.0,END)
-    f = open(tmp, "w")
-    f.write(letter)
-    f.close()
     
     a ['files'] = [tmp]
 
@@ -154,7 +172,7 @@ def _save():
     '''
     sa = tkFileDialog.asksaveasfilename()
     letter = tex.get(1.0,END)
-    f = open(sa,"w")
+    f = codecs.open(sa, "w", "utf-8")
     f.write(letter)
     f.close()
 
@@ -163,7 +181,7 @@ def _close():
 
 def _help():
     win = Toplevel(root)
-    lab = Label(win, text="Вам необходимо ввести в поле день, отчет за какой необходимо преобразовать.\nЧисло необходимо вводить в следующем формате - '01, 02, 03 и т.д.'. После этого нажать на кнопку Преобразовать.\nЕсли вы правильно ввели число и файл в формате xls существует, то он будет преобразован в формат txt\nи результат преобразования появится на экране. Файл txt будет автоматически сохранен.")
+    lab = Label(win, text="Вам необходимо ввести колличество каналов в пакетах Социальный, Базовый и Полный.\nПосле этого открыть EXCEL файл с нужным сервичным планом и нажать на кнопку Преобразовать.\nРезультат будет преобразован в формат txt\nи появится на экране. Файл txt будет автоматически сохранен.")
     lab.pack()
 
 def _about():
@@ -193,19 +211,25 @@ if __name__ == '__main__':
     fra2 = Frame(root, width=500, height=100, bd = 5)
     fra3 = Frame(root, width=500, height=500, bd = 5)
  
-    lab1 = Label(fra1, text="Откройте xls файл, который хотите преобразовать\nВведите в поле справа день месяца, для которого\nформируется текстовый файл. Будьте внимательны\nвыбирайте файл и день месяца одинаковые.\nС 1-го по 9-е числа вводятся как 01, 02 и т.д.", font="Arial 10")
-    lab2 = Label(fra3, text="Если введённое чило не верно, его можно сменить и снова выполнить\nпреобразование кнопкой Transform, не открывая файл второй раз\nДля сохранения результата выберите File->Save.", font="Arial 10")
-    ent = Entry(fra1, width=4)
+    lab1 = Label(fra1, text="Колличество каналов в пакете Социальный")
+    lab2 = Label(fra1, text="Колличество каналов в пакете Базовый")
+    lab3 = Label(fra1, text="Колличество каналов в пакете Полный")
+    ent1 = Entry(fra1, width=4)
+    ent2 = Entry(fra1, width=4)
+    ent3 = Entry(fra1, width=4)
     but1 = Button(fra1, text = "Преобразовать")
     but2 = Button(fra3, text = "Отправить исходник")
     but3 = Button(fra3, text = "Отправить результат")
     tex = Text(fra2, width=60, height=12, font="12", wrap=WORD)
  
     lab1.grid(row = 0, column = 0)
-    ent.grid(row = 0, column = 1, padx=20)
-    but1.grid(row = 1, column = 1, padx=20)
+    lab2.grid(row = 1, column = 0)
+    lab3.grid(row = 2, column = 0)
+    ent1.grid(row = 0, column = 1, padx=20)
+    ent2.grid(row = 1, column = 1, padx=20)
+    ent3.grid(row = 2, column = 1, padx=20)
+    but1.grid(row = 3, column = 1, padx=20)
     tex.grid(row = 0, column = 0)
-    lab2.grid(row = 0, column = 0)
     but2.grid(row = 0, column = 1)
     but3.grid(row = 1, column = 1)
  
