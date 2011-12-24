@@ -18,10 +18,7 @@ class Playlist(object):
         '''
         Constructor
         '''
-        self.open_file = open_file
-        self.book = open_workbook(open_file)
-        self.sheet0 = self.book.sheet_by_index(0)
-        self.row_num = 7
+        self.sheet0 = open_workbook(open_file).sheet_by_index(0)
         
     def save_playlist(self, path):
         

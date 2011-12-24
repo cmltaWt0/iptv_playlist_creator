@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import wx
+from wx import App, Frame, StaticText, Button, EVT_BUTTON
 
 '''
 Created on 23.12.2011
@@ -8,7 +8,7 @@ wx Class for main frame
 @author: maksim
 '''
 
-class MainFrame(wx.Frame):
+class MainFrame(Frame):
     '''
     classdocs
     '''
@@ -16,13 +16,13 @@ class MainFrame(wx.Frame):
         '''
         Constructor
         '''
-        wx.Frame.__init__(self, parent, -1, 'Iptv_creator')
-        self.text = wx.StaticText(self, -1,'0', (120, 40))
-        button1 = wx.Button(self, -1, '+', (10, 10))
-        button2 = wx.Button(self, -1, '-', (10, 60))
+        Frame.__init__(self, parent, -1, 'Iptv_creator')
+        self.text = StaticText(self, -1,'0', (120, 40))
+        button1 = Button(self, -1, '+', (10, 10))
+        button2 = Button(self, -1, '-', (10, 60))
         
-        self.Bind(wx.EVT_BUTTON, self.OnPlus, id=button1.GetId())
-        self.Bind(wx.EVT_BUTTON, self.OnMinus, id=button2.GetId())
+        self.Bind(EVT_BUTTON, self.OnPlus, id=button1.GetId())
+        self.Bind(EVT_BUTTON, self.OnMinus, id=button2.GetId())
         
         self.Centre()
         
@@ -37,7 +37,7 @@ class MainFrame(wx.Frame):
         self.text.SetLabel(str(value))
         
         
-class MainApp(wx.App):
+class MainApp(App):
 
     def OnInit(self):
         frame = MainFrame(None)
