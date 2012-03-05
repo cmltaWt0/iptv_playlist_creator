@@ -37,6 +37,6 @@ class Playlist(object):
                 self.playlist += '#EXTINF:0,'
             else:
                 self.playlist += '#EXTINF:0,0'
-            self.playlist += str(int(item[1])) + ' ' + '[' + 'SOCIAL' + ']' + ' ' + item[0] + '\n' + 'udp://@' + str(item[2]) + ':5004' + '\n\n'
+            self.playlist += str(item[1]) + ' ' + '[' + 'SOCIAL' + ']' + ' ' + item[0] + '\n' + 'udp://@' + str(item[2]) + ':5004' + '\n\n'
         
     
