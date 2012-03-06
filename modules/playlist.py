@@ -29,7 +29,16 @@ class Playlist(object):
         
     def parse_xls(self):
         self.playlist = '#EXTM3U\n\n'
-        for i in range(7, 57):
+        items = []
+        social = list(range(7,57))
+        base = list(range(59,79))
+        full = list(range(81,111))
+
+        [items.append(i) for i in social]
+        [items.append(i) for i in base]
+        [items.append(i) for i in full]
+
+        for i in items:
             item = self.sheet0.row_values(i-1, 0, 3)
             if item[1] < 10:
                 self.playlist += '#EXTINF:0,00'
