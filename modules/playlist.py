@@ -1,37 +1,48 @@
-# -*- coding: utf-8 -*-
+
+# -*- coding:  utf-8 -*-
+
+
 from xlrd import open_workbook
 import codecs
 
 '''
+
 Created on 23.12.2011
 
 @author: maksim
+
 '''
 
 class Playlist(object):
+
     '''
+
     classdocs
+
     '''
 
 
     def __init__(self, open_file, soc_start = 7, soc_end = 56, base_start = 59, base_end = 78, full_start = 81, full_end = 110):
+
         '''
+
         Constructor
+
         '''
         self.sheet0 = open_workbook(open_file).sheet_by_index(0)
         self.social = list(range(int(soc_start), int(soc_end) + 1))
         self.base = list(range(int(base_start), int(base_end) + 1))
         self.full = list(range(int(full_start), int(full_end) + 1))
-        
+
     def save_playlist(self, path):
-        
+
         f = codecs.open(path, "w", "utf-8")
         f.write(self.playlist)
         f.close()
         print(self.playlist)
         print('Плейлист успешно сохранен в файл tmp/tmp.txt.\n')
-              
-        
+
+
     def parse_xls(self):
         self.playlist = '#EXTM3U\n\n'
         items_social = []

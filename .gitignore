@@ -6,3 +6,4 @@ NOTES.txt
 *.txt
 *.xls
 .settings
+.idea/
